@@ -2,8 +2,16 @@ package p02WritingTests.e09DependencyInjection;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.ParameterContext;
+import org.junit.jupiter.api.extension.ParameterResolutionException;
+import org.junit.jupiter.api.extension.ParameterResolver;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.HashMap;
 
 // TestInfo -> TestInfoParameterResolver
@@ -71,5 +79,106 @@ class TestReporterTest {
             put("key2", "value2");
             put("key3", "value3");
         }});
+    }
+}
+
+//Example of custom ParameterResolvers that resolves String and int parameters for constructors
+@ExtendWith(StringConstructorResolver.class)
+@ExtendWith(IntConstructorResolver.class)
+class ATest {
+
+    private String string;
+    private int integer;
+
+    ATest(String string, int integer) {
+        this.string = string;
+        this.integer = integer;
+    }
+
+    @Test
+    public void test1() {
+        System.out.println("Inside ATest.test1(), string = " + string);
+    }
+
+    @Test
+    public void test2() {
+        System.out.println("Inside ATest.test2(), integer = " + integer);
+    }
+}
+
+@ExtendWith(StringConstructorResolver.class)
+class BTest {
+
+    private String string1, string2;
+
+    BTest(String string1, String string2) {
+        this.string1 = string1;
+        this.string2 = string2;
+    }
+
+    @Test
+    public void test1() {
+        System.out.println("Inside BTest.test1(), string1 = " + string1);
+    }
+
+    @Test
+    public void test2() {
+        System.out.println("Inside BTest.test2(), string2 = " + string2);
+    }
+}
+
+class StringConstructorResolver implements ParameterResolver {
+
+    @Override
+    public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
+            throws ParameterResolutionException {
+        System.out.println("Inside StringConstructorResolver.supportsParameter()");
+        System.out.println("Parameter: " + parameterContext.getParameter());
+        System.out.println("Declaring Executable: " + parameterContext.getDeclaringExecutable());
+        System.out.println("Element: " + extensionContext.getElement().get());
+        System.out.println("Exiting StringConstructorResolver.supportsParameter()");
+
+        Executable executable = parameterContext.getDeclaringExecutable();
+        Class<?> parameterType = parameterContext.getParameter().getType();
+        return executable instanceof Constructor<?> && parameterType == String.class;
+    }
+
+    @Override
+    public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
+            throws ParameterResolutionException {
+        System.out.println("Inside StringConstructorResolver.resolveParameter()");
+        System.out.println("Parameter: " + parameterContext.getParameter());
+        System.out.println("Declaring Executable: " + parameterContext.getDeclaringExecutable());
+        System.out.println("Element: " + extensionContext.getElement().get());
+        System.out.println("Exiting StringConstructorResolver.resolveParameter()");
+        return "Yes!";
+    }
+}
+
+class IntConstructorResolver implements ParameterResolver {
+
+    @Override
+    public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
+            throws ParameterResolutionException {
+        System.out.println("Inside IntConstructorResolver.supportsParameter()");
+        System.out.println("Parameter: " + parameterContext.getParameter());
+        System.out.println("Declaring Executable: " + parameterContext.getDeclaringExecutable());
+        System.out.println("Element: " + extensionContext.getElement().get());
+        System.out.println("Exiting IntConstructorResolver.supportsParameter()");
+
+        Executable executable = parameterContext.getDeclaringExecutable();
+        Class<?> parameterType = parameterContext.getParameter().getType();
+        return executable instanceof Constructor<?> && parameterType == int.class;
+    }
+
+    @Override
+    public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
+            throws ParameterResolutionException {
+        System.out.println("Inside IntConstructorResolver.resolveParameter()");
+        System.out.println("Parameter: " + parameterContext.getParameter());
+        System.out.println("Declaring Executable: " + parameterContext.getDeclaringExecutable());
+        System.out.println("Element: " + extensionContext.getElement().get());
+        System.out.println("Exiting IntConstructorResolver.resolveParameter()");
+        return 100;
     }
 }
