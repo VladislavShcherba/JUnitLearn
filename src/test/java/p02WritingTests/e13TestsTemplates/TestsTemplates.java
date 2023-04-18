@@ -1,5 +1,5 @@
 package p02WritingTests.e13TestsTemplates;
 
 class TestsTemplates {
-    //TODO: create test template
+    //see p05ExtensionModel.e13TestTemplates
 }

@@ -1,6 +1,10 @@
-package e12ParameterizedTests;
+package p02WritingTests.e12ParameterizedTests;
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
@@ -16,10 +20,30 @@ import java.util.stream.Stream;
 
 class ValueSourceTest {
 
+    @BeforeAll
+    static void beforeAll() {
+        System.out.println("beforeAll()");
+    }
+
+    @BeforeEach
+    void beforeEach() {
+        System.out.println("beforeEach()");
+    }
+
     @ParameterizedTest
     @ValueSource(ints = {1, 2, 3})
     void test1(int arg) {
         System.out.println("The arg is " + arg);
+    }
+
+    @AfterEach
+    void afterEach() {
+        System.out.println("afterEach()");
+    }
+
+    @AfterAll
+    static void afterAll() {
+        System.out.println("afterAll()");
     }
 }
 
